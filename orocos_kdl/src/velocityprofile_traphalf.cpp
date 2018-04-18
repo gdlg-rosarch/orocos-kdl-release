@@ -42,7 +42,6 @@
 
 //#include "error.h"
 #include "velocityprofile_traphalf.hpp"
-#include <algorithm>
 
 namespace KDL {
 
@@ -59,9 +58,9 @@ void VelocityProfile_TrapHalf::PlanProfile1(double v,double a) {
 	a3 = 0;
 	a2 = 0;
 	a1 = startpos;
-	b3 = a/2.0;
+	b3 = a/2;
 	b2 = -a*t1;
-	b1 = startpos + a*t1*t1/2.0;
+	b1 = startpos + a*t1*t1/2;
 	c3 = 0;
 	c2 = v;
 	c1 = endpos - v*duration;
@@ -71,9 +70,9 @@ void VelocityProfile_TrapHalf::PlanProfile2(double v,double a) {
 	a3 = 0;
 	a2 = v;
 	a1 = startpos;
-	b3 = -a/2.0;
+	b3 = -a/2;
 	b2 = a*t2;
-	b1 = endpos - a*t2*t2/2.0;
+	b1 = endpos - a*t2*t2/2;
 	c3 = 0;
 	c2 = 0;
 	c1 = endpos;
@@ -83,17 +82,15 @@ void VelocityProfile_TrapHalf::SetProfile(double pos1,double pos2) {
 	startpos        = pos1;
 	endpos          = pos2;
 	double s        = sign(endpos-startpos);
-	// check that the maxvel is obtainable
-	double vel = std::min(maxvel, sqrt(2.0*s*(endpos-startpos)*maxacc));
-	duration		= s*(endpos-startpos)/vel+vel/maxacc/2.0;
+	duration		= s*(endpos-startpos)/maxvel+maxvel/maxacc/2.0;
 	if (starting) {
 		t1 = 0;
-		t2 = vel/maxacc;
-		PlanProfile1(vel*s,maxacc*s);
+		t2 = maxvel/maxacc;
+		PlanProfile1(maxvel*s,maxacc*s);
 	} else {
-		t1 = duration-vel/maxacc;
+		t1 = duration-maxvel/maxacc;
 		t2 = duration;
-		PlanProfile2(s*vel,s*maxacc);
+		PlanProfile2(s*maxvel,s*maxacc);
 	}
 }
 
